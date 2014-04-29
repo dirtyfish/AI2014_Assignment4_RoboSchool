@@ -12,11 +12,14 @@ green = (0,255,0)
 blue = (0,123,123) 
 screenw=1024
 screenh=768
-fieldw=1024/2-48
-fieldh=768/2-1
-fieldr=1024/2+48
-fieldd=768/2+1
+#fieldw=1024/2-48
+fieldw=7*64
+#fieldh=768/2
+fieldh=6*64
+fieldr=1024/2+63
+fieldd=768/2
 
+print fieldw/64,fieldh/64
 #black=0x000000
 #black=66
 
@@ -84,9 +87,10 @@ def main():
 
 
         pygame.draw.rect(screen, blue, [0,0,fieldw,fieldh], 2)
+        pygame.draw.rect(screen, blue, [0,0,64,64], 2)
         pygame.draw.rect(screen, blue, [0,fieldd,fieldw,fieldh], 2)
         pygame.draw.rect(screen, blue, [fieldr,0,fieldw,fieldh], 2)
-        pygame.draw.rect(screen, blue, [fieldr,fieldd,screenw/2-48,screenh/2-1], 2)        
+        pygame.draw.rect(screen, blue, [fieldr,fieldd,fieldw,fieldh], 2)        
     
         pygame.display.flip()
         mainClock.tick(30)
