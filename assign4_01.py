@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 
-
-
 import pygame, os, random
 from pygame.locals import *
 from math import sin
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
-
 
 black = (0,0,33) 
 red = (255,0,0) #red
@@ -20,7 +17,8 @@ fieldh=768/2-1
 fieldr=1024/2+48
 fieldd=768/2+1
 
-
+#black=0x000000
+#black=66
 
 instructions= ['UP','LEFT','DOWN','RIGHT','TURN LEFT','TURN RIGHT']
 imagenamel=['instruction_up_cropped_96.tga']
@@ -37,8 +35,6 @@ def randomcolor():
 
     return (random.randint(0,255),random.randint(0,255),random.randint(0,255))
 
-
-
 def main():
     shuffled=0
     pygame.init()
@@ -49,15 +45,12 @@ def main():
         for imagename in imagenamel:
     
           fullimagename= os.path.join(main_dir, 'IMAGES',imagename)
-          #print fullimagename
-          bitmap = pygame.image.load(fullimagename)
-          
+          bitmap = pygame.image.load(fullimagename)      
           imagenamelist.append(fullimagename)
           bitmaplist.append(bitmap)
 
     print imagenamelist
   
-
     #get the image and screen in the same format
     if screen.get_bitsize() == 8:
         screen.set_palette(bitmap.get_palette())
@@ -67,15 +60,12 @@ def main():
     #prep some variables
     anim = 0.0
 
-    #mainloop
-    
+    #mainloop 
     stopevents = QUIT, KEYDOWN, MOUSEBUTTONDOWN
     frame=0
 
     while 1:
-       
         frame+=1
-     
         screen.fill(black)
         for e in pygame.event.get():
             if e.type in stopevents:
@@ -96,17 +86,10 @@ def main():
         pygame.draw.rect(screen, blue, [0,0,fieldw,fieldh], 2)
         pygame.draw.rect(screen, blue, [0,fieldd,fieldw,fieldh], 2)
         pygame.draw.rect(screen, blue, [fieldr,0,fieldw,fieldh], 2)
-        pygame.draw.rect(screen, blue, [fieldr,fieldd,screenw/2-48,screenh/2-1], 2)
-               
-
-            
+        pygame.draw.rect(screen, blue, [fieldr,fieldd,screenw/2-48,screenh/2-1], 2)        
     
-
-
         pygame.display.flip()
         mainClock.tick(30)
-
-
 
 if __name__ == '__main__': main()
 pygame.quit()
