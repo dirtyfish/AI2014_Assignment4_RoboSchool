@@ -9,10 +9,12 @@ from math import sin
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 
 
-black = (255,255,255) #almost white
+black = (0,0,33) 
 red = (255,0,0) #red
 green = (0,255,0) 
 blue = (0,0,255) 
+screenw=1024
+screenh=768
 
 
 instructions= ['UP','LEFT','DOWN','RIGHT','TURN LEFT','TURN RIGHT']
@@ -36,7 +38,7 @@ def main():
 
     pygame.init()
     mainClock = pygame.time.Clock()
-    screen = pygame.display.set_mode((1024, 768), HWSURFACE|DOUBLEBUF)
+    screen = pygame.display.set_mode((screenw, screenh), HWSURFACE|DOUBLEBUF)
 
     if 1:
         for imagename in imagenamel:
@@ -77,7 +79,13 @@ def main():
         posx=0
         for bitmap in bitmaplist:
             posx+=96
-            screen.blit(bitmap, (posx, 0), (0, 0, 96,96))
+            screen.blit(bitmap, (screenw/2-48, posx), (0, 0, 96,96))
+
+
+        pygame.draw.rect(screen, blue, [0,0,screenw/2-48,screenh/2-1], 1)
+        pygame.draw.rect(screen, blue, [0,screenh/2,screenw/2-48,screenh/2-1], 1)
+        pygame.draw.rect(screen, blue, [screenw/2+48,0,screenw/2-48,screenh/2-1], 1)
+        pygame.draw.rect(screen, blue, [screenw/2+48,screenh/2,screenw/2-48,screenh/2-1], 1)
                
 
             
