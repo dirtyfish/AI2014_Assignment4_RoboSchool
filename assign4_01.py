@@ -12,9 +12,14 @@ main_dir = os.path.split(os.path.abspath(__file__))[0]
 black = (0,0,33) 
 red = (255,0,0) #red
 green = (0,255,0) 
-blue = (0,0,255) 
+blue = (0,123,123) 
 screenw=1024
 screenh=768
+fieldw=1024/2-48
+fieldh=768/2-1
+fieldr=1024/2+48
+fieldd=768/2+1
+
 
 
 instructions= ['UP','LEFT','DOWN','RIGHT','TURN LEFT','TURN RIGHT']
@@ -35,7 +40,7 @@ def randomcolor():
 
 
 def main():
-
+    shuffled=0
     pygame.init()
     mainClock = pygame.time.Clock()
     screen = pygame.display.set_mode((screenw, screenh), HWSURFACE|DOUBLEBUF)
@@ -77,15 +82,21 @@ def main():
                 return
         
         posx=0
+        if shuffled==0:
+            random.shuffle(bitmaplist)
+            shuffled=1
         for bitmap in bitmaplist:
             posx+=96
-            screen.blit(bitmap, (screenw/2-48, posx), (0, 0, 96,96))
+            adposx=posx+frame*2
+            adposx%=screenh+96
+            adposx-=96
+            screen.blit(bitmap, (screenw/2-48, adposx), (0, 0, 96,96))
 
 
-        pygame.draw.rect(screen, blue, [0,0,screenw/2-48,screenh/2-1], 1)
-        pygame.draw.rect(screen, blue, [0,screenh/2,screenw/2-48,screenh/2-1], 1)
-        pygame.draw.rect(screen, blue, [screenw/2+48,0,screenw/2-48,screenh/2-1], 1)
-        pygame.draw.rect(screen, blue, [screenw/2+48,screenh/2,screenw/2-48,screenh/2-1], 1)
+        pygame.draw.rect(screen, blue, [0,0,fieldw,fieldh], 2)
+        pygame.draw.rect(screen, blue, [0,fieldd,fieldw,fieldh], 2)
+        pygame.draw.rect(screen, blue, [fieldr,0,fieldw,fieldh], 2)
+        pygame.draw.rect(screen, blue, [fieldr,fieldd,screenw/2-48,screenh/2-1], 2)
                
 
             
