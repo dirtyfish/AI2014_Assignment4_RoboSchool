@@ -88,6 +88,7 @@ def main():
 
         pygame.draw.rect(screen, blue, [0,0,fieldw,fieldh], 2)
         pygame.draw.rect(screen, blue, [0,0,64,64], 2)
+        pygame.draw.rect(screen, blue, [0,0,32,32], 2)
         pygame.draw.rect(screen, blue, [0,fieldd,fieldw,fieldh], 2)
         pygame.draw.rect(screen, blue, [fieldr,0,fieldw,fieldh], 2)
         pygame.draw.rect(screen, blue, [fieldr,fieldd,fieldw,fieldh], 2)        
