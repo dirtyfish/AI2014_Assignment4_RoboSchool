@@ -36,7 +36,7 @@ def main():
 
     pygame.init()
     mainClock = pygame.time.Clock()
-    screen = pygame.display.set_mode((800, 600), HWSURFACE|DOUBLEBUF)
+    screen = pygame.display.set_mode((1024, 768), HWSURFACE|DOUBLEBUF)
 
     if 1:
         for imagename in imagenamel:
