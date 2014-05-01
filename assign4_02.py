@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import pygame, os, random
+import pygame, os, random, math
 from pygame.locals import *
 from math import sin
 
@@ -32,6 +32,7 @@ imagenamel.append('instruction_right_cropped_96.tga')
 imagenamel.append('instruction_turnleft_cropped_96.tga')
 imagenamel.append('instruction_turnright_cropped_96.tga')
 imagenamel.append('sky.png')
+imagenamel.append('floor.jpg')
 imagenamelist=[]
 bitmaplist=[]
 avgcolorlist=[]
@@ -68,7 +69,7 @@ def main():
     #mainloop 
     stopevents = QUIT, KEYDOWN, MOUSEBUTTONDOWN
     frame=0
-    random.shuffle(bitmaplist)
+    
 
     while 1:
         frame+=1
@@ -86,15 +87,24 @@ def main():
             screen.blit(bitmap, (screenw/2-48, adposx), (0, 0, 96,96))
 
 
-        pygame.draw.rect(screen, blue, [0,0,fieldw,fieldh], 2)
-        pygame.draw.rect(screen, blue, [0,0,64,64], 2)
-        pygame.draw.rect(screen, blue, [0,0,32,32], 2)
-        pygame.draw.rect(screen, blue, [0,fieldd,fieldw,fieldh], 2)
-        pygame.draw.rect(screen, blue, [fieldr,0,fieldw,fieldh], 2)
-        pygame.draw.rect(screen, blue, [fieldr,fieldd,fieldw,fieldh], 2)        
+        #pygame.draw.rect(screen, blue, [0,0,fieldw,fieldh], 2)
+        #pygame.draw.rect(screen, blue, [0,0,64,64], 2)
+        #pygame.draw.rect(screen, blue, [0,0,32,32], 2)
+        pygame.draw.rect(screen, blue, [0,fieldd,fieldw,fieldh], frame%2*5+1)
+        pygame.draw.rect(screen, blue, [fieldr,0,fieldw,fieldh], frame%2+1)
+        pygame.draw.rect(screen, blue, [fieldr,fieldd,fieldw,fieldh], frame%2+1) 
+
+        screen.blit(bitmaplist[7], (0, fieldd), (frame, 0, fieldw,fieldh)) 
+        screen.blit(bitmaplist[7], (0, 0), (0, frame, fieldw,fieldh)) 
+        screen.blit(bitmaplist[7], (fieldr, 0), (frame, frame, fieldw,fieldh)) 
+        screen.blit(bitmaplist[7], (fieldr, fieldd), (frame, 100.0*math.sin(frame/100.0), fieldw,fieldh)) 
+
+        screen.blit(bitmaplist[0], (0, fieldd), (-frame, 0, fieldw,fieldh)) 
+        screen.blit(bitmaplist[4], (fieldr, fieldd), (-frame, -frame*0.5, fieldw,fieldh)) 
+        screen.blit(bitmaplist[2], (0, 0), (-frame, -100.0*math.sin(frame/100.0), fieldw,fieldh)) 
     
         pygame.display.flip()
-        mainClock.tick(30)
+        mainClock.tick(51)
 
 if __name__ == '__main__': main()
 pygame.quit()
