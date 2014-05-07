@@ -20,7 +20,7 @@ fieldw=7*64
 fieldh=6*64
 fieldr=1024/2+63
 fieldd=768/2
-rotation=[0,0]
+rotation=[-1,-1]
 
 upcli="c:/windows/fonts/upcli.ttf"   ##seems to work for me
 fontsize=44
@@ -44,7 +44,7 @@ imagenamel.append('floor.jpg')
 imagenamel.append('instruction_turnright_cropped_96.tga')
 imagenamel.append('rs_title_c_32.tga')
 
-tilenamel=['white.jpg','bluegrey.jpg','pattern.jpg','start.jpg','goal.jpg','bot.tga','bot.tga']
+tilenamel=['white.jpg','bluegrey.jpg','pattern.jpg','start.jpg','goal.jpg','car.tga','car2.tga']
 tilelist=[]
 imagenamelist=[]
 bitmaplist=[]
@@ -430,18 +430,18 @@ def main():
                     tilelist[5]=pygame.transform.rotate(tilelist[5],90)
                   else:
                     if decks[0][cardfromframe]==6:
-                      rotation[0]-=1  
+                      rotation[0]-=1
                       tilelist[5]=pygame.transform.rotate(tilelist[5],-90)
                     else:
 
                       if (decks[0][cardfromframe]+rotation[0])%4==1:
-                        deltay-=one
+                        deltay=-one
                       if (decks[0][cardfromframe]+rotation[0])%4==3:
-                        deltay+=one
+                        deltay=one
                       if (decks[0][cardfromframe]+rotation[0])%4==2:
-                        deltax-=one
+                        deltax=-one
                       if (decks[0][cardfromframe]+rotation[0])%4==0:
-                        lookx+=one
+                        deltax=one
 
                   #if decks[0][cardfromframe]==5:
                    # bitmaplist[7]=pygame.transform.rotate(bitmaplist[7],10)
@@ -457,18 +457,18 @@ def main():
                     
                   else:
                     if decks[1][cardfromframe]==6:
-                      rotation[1]-=1  
+                      rotation[1]-=1
                       tilelist[6]=pygame.transform.rotate(tilelist[6],-90)
                       
                     else:
                       if (decks[1][cardfromframe]+rotation[1])%4==1:
-                        deltay2-=one
+                        deltay2=-one
                       if (decks[1][cardfromframe]+rotation[1])%4==3:
-                        deltay2+=one
+                        deltay2=one
                       if (decks[1][cardfromframe]+rotation[1])%4==2:
-                        deltax2-=one
+                        deltax2=-one
                       if (decks[1][cardfromframe]+rotation[1])%4==0:
-                        deltax2+=one
+                        deltax2=one
               
 
 
