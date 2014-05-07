@@ -7,7 +7,7 @@ from math import sin
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 
 
-
+frameadd=1
 black = (0,0,33) 
 red = (255,0,0) #red
 green = (0,255,0) 
@@ -20,6 +20,7 @@ fieldw=7*64
 fieldh=6*64
 fieldr=1024/2+63
 fieldd=768/2
+rotation=[0,0]
 
 upcli="c:/windows/fonts/upcli.ttf"   ##seems to work for me
 fontsize=44
@@ -31,6 +32,7 @@ print fieldw,fieldh
 #black=66
 
 instructions= ['UP','LEFT','DOWN','RIGHT','TURN LEFT','TURN RIGHT']
+
 imagenamel=['instruction_up_cropped_96.tga']
 imagenamel.append('instruction_left_cropped_96.tga')
 imagenamel.append('instruction_down_cropped_96.tga')
@@ -42,7 +44,7 @@ imagenamel.append('floor.jpg')
 imagenamel.append('instruction_turnright_cropped_96.tga')
 imagenamel.append('rs_title_c_32.tga')
 
-tilenamel=['white.jpg','bluegrey.jpg','pattern.jpg','start.jpg','goal.jpg']
+tilenamel=['white.jpg','bluegrey.jpg','pattern.jpg','start.jpg','goal.jpg','bot.tga','bot.tga']
 tilelist=[]
 imagenamelist=[]
 bitmaplist=[]
@@ -53,7 +55,13 @@ def randomcolor():
     return (random.randint(0,255),random.randint(0,255),random.randint(0,255))
 
 def main():
-    room=4
+    lookx=0
+    looky=0
+    lookx2=0
+    looky2=0
+    decks=[[],[]]
+    frameadd=1
+    room=2
     pygame.init()
     mainClock = pygame.time.Clock()
     screen = pygame.display.set_mode((screenw, screenh), HWSURFACE|DOUBLEBUF)
@@ -75,6 +83,10 @@ def main():
 
     print imagenamelist
     print bitmaplist[7].get_size()
+    bitmaplist.append(pygame.transform.scale(bitmaplist[7],(448,384)))
+    print len(bitmaplist)
+    print bitmaplist[10].get_size()
+
   
     #get the image and screen in the same format
     if screen.get_bitsize() == 8:
@@ -103,7 +115,7 @@ def main():
     
  #mainloop ##################################################################################
     while 1:
-        frame+=1
+        frame+=frameadd
         screen.fill(black)
        
 
@@ -257,6 +269,7 @@ def main():
             
               font=pygame.font.Font(upcli,fontsize*2)
               text= font.render("START", True, black)
+              text=pygame.transform.rotate(text,10);
               screen.blit(text, [420,150+50*math.sin((frame*2-2)*0.05)])
 
             else:
@@ -279,7 +292,7 @@ def main():
                 selcarddir=0
                 cardlist=[]
                 carddir=[]
-                cards=10
+                cards=8
                 cardsleft=cards
                 totdir=0
                 for x in range(cards):
@@ -292,10 +305,13 @@ def main():
                 print "cardlist:",cardlist
 
             screen.fill((55,133,33))
-            screen.blit(bitmaplist[7], (0, fieldd), (0, 0, fieldw,fieldh)) 
-            screen.blit(bitmaplist[7], (0, 0), (0, 0, fieldw,fieldh)) 
-            screen.blit(bitmaplist[7], (fieldr, 0), (0, 0, fieldw,fieldh)) 
-            screen.blit(bitmaplist[7], (fieldr, fieldd), (0, 0, fieldw,fieldh)) 
+            screen.blit(bitmaplist[7], (0, fieldd), (lookx, looky, fieldw,fieldh)) 
+            screen.blit(bitmaplist[10], (0, 0), (0, 0, fieldw,fieldh)) 
+            screen.blit(bitmaplist[10], (fieldr, 0), (0, 0, fieldw,fieldh)) 
+            screen.blit(bitmaplist[7], (fieldr, fieldd), (lookx2, looky2, fieldw,fieldh)) 
+
+            screen.blit(tilelist[5],(3*64,fieldd+3*64))
+            screen.blit(tilelist[6],(fieldr+3*64,fieldd+3*64))
 
             #screen.blit(bitmaplist[0], (0, fieldd), (-frame, 0, fieldw,fieldh)) 
             #screen.blit(bitmaplist[4], (fieldr, fieldd), (-frame, -frame*0.5, fieldw,fieldh)) 
@@ -313,18 +329,26 @@ def main():
                 #adposx%=screenh+96
                 adposx-=96
 
+                if adposx==673 and frameadd==2:
+                    adposx=672
+                    frameadd=1
                 if adposx==672:#decide direction
+                    frameadd=1
                     if totdir==cardsleft:
                         selcarddir=-1
                     if totdir==-cardsleft:
                         selcarddir=1
 
-                    if selcarddir==0:
-                      selcarddir=nrcard%2*2-1
+                    #if selcarddir==0:
+                      #selcarddir=nrcard%2*2-1
 
                     carddir[nrcard]=selcarddir
                     cardsleft-=1
                     totdir+=selcarddir
+                    if cardsleft==0:
+                        room=6
+                        frame=0
+                        
 
 
                 if adposx>672:#card changes direction
@@ -332,31 +356,179 @@ def main():
                     adposy=adposx-672
                     adposx=672
 
-
+                if carddir[nrcard]==0:
+                    carddir[nrcard]=nrcard%2*2-1
+                    totdir+=nrcard%2*2-1
                 screen.blit(bitmap, (screenw/2-48+adposy*(carddir[nrcard]), adposx), (0, 0, 96,96))
-                font=pygame.font.Font(upcli,fontsize*2/3)
-                text= font.render(str(nrcard), True, (255,255,255))
+                #font=pygame.font.Font(upcli,fontsize*2/3)
+                #text= font.render(str(card), True, (255,255,255))
                 #text= font.render(str(totdir), True, (255,255,255))
-                screen.blit(text, [screenw/2-48+adposy*(carddir[nrcard])+5, adposx+5])
+                #screen.blit(text, [screenw/2-48+adposy*(carddir[nrcard])+5, adposx+5])
                 #if frame>=48:
                  #   frame=48
 
                 posx+=96
+                for e in pygame.event.get():
+                  if e.type == KEYDOWN:
+                    if e.key == ord('a'):
+                        selcarddir=-1
+                        frameadd=2
+                    if e.key == ord('d'):
+                        selcarddir=1
+                        frameadd=2
+                    if e.key == ord('s'):
+                        frameadd=2
+
+                    if e.key == ord('f'):
+                        carddir=[-1,-1,-1,-1,1,1,1,1]
+                        room=6
+                        frame=0
+                  if e.type == stopevent:
+                      return
+                  
+                  
+            
+
+        if room==6:
+
+            if frame==0:
+                
+                frameadd=1
+                decks=[[],[]]
+                carddir.reverse()
+                for x in range(cards):
+                  if carddir[x]==1:
+                    decks[1].append(cardlist[x])
+                  else:
+                    decks[0].append(cardlist[x])
+                decks[1].reverse()
+                decks[0].reverse()
+
+                print decks
+
+
+            #print carddir
+                
+            
+            #print "cardlist:",cardlist
+            cardfromframe=frame/64
+            if cardfromframe>cards/2-1:
+                room=5
+                frame=-1#when you are going down one room.. or reset wont work
+
+            
+            else:
+              if frame%64==0:
+                  one=1
+                  deltax=0
+                  deltay=0
+                  deltax2=0
+                  deltay2=0
+                  #delta=0
+                  if decks[0][cardfromframe]==5:
+                    rotation[0]+=1
+                    tilelist[5]=pygame.transform.rotate(tilelist[5],90)
+                  else:
+                    if decks[0][cardfromframe]==6:
+                      rotation[0]-=1  
+                      tilelist[5]=pygame.transform.rotate(tilelist[5],-90)
+                    else:
+
+                      if (decks[0][cardfromframe]+rotation[0])%4==1:
+                        deltay-=one
+                      if (decks[0][cardfromframe]+rotation[0])%4==3:
+                        deltay+=one
+                      if (decks[0][cardfromframe]+rotation[0])%4==2:
+                        deltax-=one
+                      if (decks[0][cardfromframe]+rotation[0])%4==0:
+                        lookx+=one
+
+                  #if decks[0][cardfromframe]==5:
+                   # bitmaplist[7]=pygame.transform.rotate(bitmaplist[7],10)
+                  #if decks[0][cardfromframe]==6:
+                   # bitmaplist[7]=pygame.transform.rotate(bitmaplist[7],-10)
+
+
+
+
+                  if decks[1][cardfromframe]==5:
+                    rotation[1]+=1
+                    tilelist[6]=pygame.transform.rotate(tilelist[6],90)
+                    
+                  else:
+                    if decks[1][cardfromframe]==6:
+                      rotation[1]-=1  
+                      tilelist[6]=pygame.transform.rotate(tilelist[6],-90)
+                      
+                    else:
+                      if (decks[1][cardfromframe]+rotation[1])%4==1:
+                        deltay2-=one
+                      if (decks[1][cardfromframe]+rotation[1])%4==3:
+                        deltay2+=one
+                      if (decks[1][cardfromframe]+rotation[1])%4==2:
+                        deltax2-=one
+                      if (decks[1][cardfromframe]+rotation[1])%4==0:
+                        deltax2+=one
+              
+
+
+
+            lookx+=deltax
+            looky+=deltay
+            lookx2+=deltax2
+            looky2+=deltay2
+            screen.fill((55,133,33))
+            screen.blit(bitmaplist[7], (0, fieldd), (lookx, looky, fieldw,fieldh)) 
+            screen.blit(bitmaplist[10], (0, 0), (0, 0, fieldw,fieldh)) 
+            screen.blit(bitmaplist[10], (fieldr, 0), (0, 0, fieldw,fieldh)) 
+            screen.blit(bitmaplist[7], (fieldr, fieldd), (lookx2, looky2, fieldw,fieldh)) 
+
+            screen.blit(tilelist[5],(3*64,fieldd+3*64))
+            screen.blit(tilelist[6],(fieldr+3*64,fieldd+3*64))
+
+
+            decknr=-1
+
+            for deck in decks:
+                
+                mcard=0
+                for card in deck:
+                    mcard+=1
+
+                    bitmap=bitmaplist[card-1]
+                    if mcard==cardfromframe+1:
+                      stretch = pygame.transform.scale(bitmap, (64, 64))
+                      screen.blit(stretch, (screenw/2-32+decknr*400, (mcard*96)), (0, 0, 64,64))
+                    else:
+                      stretch = pygame.transform.scale(bitmap, (48, 48))  
+                      screen.blit(stretch, (screenw/2-24+decknr*400, (mcard*96)), (0, 0, 48,48))
+                    
+                    font=pygame.font.Font(upcli,fontsize*2/3)
+                    text= font.render(str(nrcard), True, (255,255,255))
+                #text= font.render(str(totdir), True, (255,255,255))
+                    #screen.blit(text, [screenw/2-48+adposy*(carddir[nrcard])+5, adposx+5])
+                decknr+=2
+
+           
 
 
 
 
             for e in pygame.event.get():
-              if e.type == KEYDOWN:
-                if e.key == ord('a'):
-                  selcarddir=-1
-                if e.key == ord('d'):  
-                  selcarddir=1
+             
                   
               
               if e.type == stopevent:
                 return
 
+        if room==7:
+            screen.fill((99,133,99))
+            for e in pygame.event.get():
+             
+                  
+              
+              if e.type == stopevent:
+                return
 
 
 
