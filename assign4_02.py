@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+#AI assignment 4
+
+#The program will search 70 alternative setups 
+#
+#give each alternative a score and chose best option.
+#The goal is to drive one car to the goal.
 
 import pygame, os, random, math, copy
 from pygame.locals import *
@@ -280,7 +286,7 @@ def main():
             text= font.render("YOU WILL CONTROL TWO ROBOTS", True, blue)
             screen.blit(text, [400,450+50*math.sin((frame*2/4-2)*0.05)])
 
-            text= font.render("A - LEFT, D - RIGHT", True, blue)
+            text= font.render("A - LEFT, D - RIGHT, C-CHEAT", True, blue)
             screen.blit(text, [400,550+50*math.sin((frame*2/4-2)*0.05)])
 
             
