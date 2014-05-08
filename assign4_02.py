@@ -197,6 +197,9 @@ def main():
             text= font.render("PRESS I FOR INSTRUCTION", True, blue)
             screen.blit(text, [400,450+50*math.sin((frame*2/4-2)*0.05)])
 
+            text= font.render("PRESS F FOR FULLSCREEN", True, blue)
+            screen.blit(text, [400,550+50*math.sin((frame*3/5-2)*0.05)])
+
             
 
 
@@ -210,9 +213,11 @@ def main():
                   pygame.mixer.music.fadeout(2999)
                 if e.key == ord('i'):
                   room=4
-
-                  #pygame.mixer.music.load('Power tools.mp3')
-                  pygame.mixer.music.play(0, 0.5)
+                if e.key == ord('f'):
+                  screen = pygame.display.set_mode((screenw, screenh), HWSURFACE|DOUBLEBUF|FULLSCREEN)
+                if e.key == ord('w'):
+                  screen = pygame.display.set_mode((screenw, screenh), HWSURFACE|DOUBLEBUF)
+                                    
               if e.type == stopevent:
                 return
 
@@ -379,8 +384,12 @@ def main():
                         frameadd=2
                     if e.key == ord('s'):
                         frameadd=2
-
+                    if e.key == ord('w'):
+                        screen = pygame.display.set_mode((screenw, screenh), HWSURFACE|DOUBLEBUF)
                     if e.key == ord('f'):
+                        screen = pygame.display.set_mode((screenw, screenh), HWSURFACE|DOUBLEBUF|FULLSCREEN)
+
+                    if e.key == ord('c'):
                         carddir=[-1,-1,-1,-1,1,1,1,1]
                         room=6
                         frame=0
@@ -395,6 +404,7 @@ def main():
             if frame==0:
                 
                 frameadd=1
+                rotationcountdown=[0,0]
                 decks=[[],[]]
                 carddir.reverse()
                 for x in range(cards):
@@ -421,17 +431,25 @@ def main():
             else:
               if frame%64==0:
                   one=1
+                  leftcar=tilelist[5]
+                  rightcar=tilelist[6]
                   deltax=0
                   deltay=0
                   deltax2=0
                   deltay2=0
+                  rotdeg=[rotation[0]*90%360,rotation[1]*90%360]
+                  
+                  print rotdeg
+
                   #delta=0
                   if decks[0][cardfromframe]==5:
                     rotation[0]+=1
+                    rotationcountdown[0]+=90
                     tilelist[5]=pygame.transform.rotate(tilelist[5],90)
                   else:
                     if decks[0][cardfromframe]==6:
                       rotation[0]-=1
+                      rotationcountdown[0]-=90
                       tilelist[5]=pygame.transform.rotate(tilelist[5],-90)
                     else:
 
@@ -454,11 +472,13 @@ def main():
 
                   if decks[1][cardfromframe]==5:
                     rotation[1]+=1
+                    rotationcountdown[1]+=90
                     tilelist[6]=pygame.transform.rotate(tilelist[6],90)
                     
                   else:
                     if decks[1][cardfromframe]==6:
                       rotation[1]-=1
+                      rotationcountdown[1]-=90
                       tilelist[6]=pygame.transform.rotate(tilelist[6],-90)
                       
                     else:
@@ -484,8 +504,34 @@ def main():
             screen.blit(bitmaplist[10], (fieldr, 0), (0, 0, fieldw,fieldh)) 
             screen.blit(bitmaplist[7], (fieldr, fieldd), (lookx2, looky2, fieldw,fieldh)) 
 
-            screen.blit(tilelist[5],(3*64,fieldd+3*64))
-            screen.blit(tilelist[6],(fieldr+3*64,fieldd+3*64))
+            if rotationcountdown[0]>0:
+              rotationcountdown[0]-=2
+
+              leftcar=pygame.transform.rotate(tilelist[5],-1*rotationcountdown[0])
+
+
+            if rotationcountdown[0]<0:
+              rotationcountdown[0]+=2
+
+              leftcar=pygame.transform.rotate(tilelist[5],-1*rotationcountdown[0])
+
+            leftcarrect=leftcar.get_rect()
+            leftcarrect.center=(3*64+32,fieldd+3*64+32)
+            screen.blit(leftcar,leftcarrect)
+
+            if rotationcountdown[1]>0:
+              rotationcountdown[1]-=2
+              rightcar=pygame.transform.rotate(tilelist[6],-1*rotationcountdown[1])
+
+
+            if rotationcountdown[1]<0:
+              rotationcountdown[1]+=2
+              rightcar=pygame.transform.rotate(tilelist[6],-1*rotationcountdown[1])
+
+
+            rightcarrect=rightcar.get_rect()
+            rightcarrect.center=(fieldr+3*64+32,fieldd+3*64+32)
+            screen.blit(rightcar,(rightcarrect))
 
 
             decknr=-1

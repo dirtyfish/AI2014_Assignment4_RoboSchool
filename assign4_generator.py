@@ -1,7 +1,7 @@
 #assign4_generator.py
 
 
-
+#for python 2x
 def printf(str, *args):
     print(str % args),
 
