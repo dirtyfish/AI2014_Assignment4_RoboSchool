@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import pygame, os, random, math
+import pygame, os, random, math, copy
 from pygame.locals import *
 from math import sin
 
@@ -51,11 +51,33 @@ imagenamelist=[]
 bitmaplist=[]
 avgcolorlist=[]
 
-def randomcolor():
 
-    return (random.randint(0,255),random.randint(0,255),random.randint(0,255))
+def searchrange(levels):
+ for x in range(1<<levels):
+  #print " ",x," ",
+  xx=x
+  count=0
+  result=[]
+  for y in range(levels,0,-1):
+    yy=xx>>y-1
+    yy%=2
+    count+=yy
+    #print yy,
+    result.append(yy)
+  #print count,
+  if count==levels/2:
+    yield result
+
+def splitlist(getlist,sortlist):
+  result=[[],[]]
+  for x in range(len(getlist)):
+    result[sortlist[x]].append(getlist[x])
+  return result
+
 
 def main():
+    carpos=[[4,4],[4,4]]
+    goalpos=[[11,15],[11,15]]
     lookx=0
     looky=0
     lookx2=0
@@ -84,6 +106,17 @@ def main():
 
     print imagenamelist
     print bitmaplist[7].get_size()
+    bitmaplist[7].blit(tilelist[3], (64*3, 64*3), (0, 0, 64,64))
+    for x in range(9):
+      bitmaplist[7].blit(tilelist[x%2], (64*(x%3), 64*(x/3)), (0, 0, 64,64))
+    for x in range(9):
+      bitmaplist[7].blit(tilelist[x%2], (64*(x%3+8), 64*(x/3+8)), (0, 0, 64,64))
+    for x in range(9):
+      bitmaplist[7].blit(tilelist[x%2], (64*(x%3+2), 64*(x/3+5)), (0, 0, 64,64))
+    for x in range(9):
+      bitmaplist[7].blit(tilelist[x%2], (64*(x%3+11), 64*(x/3+15)), (0, 0, 64,64))
+
+    bitmaplist[7].blit(tilelist[4], (64*10, 64*14), (0, 0, 64,64))
     bitmaplist.append(pygame.transform.scale(bitmaplist[7],(448,384)))
     print len(bitmaplist)
     print bitmaplist[10].get_size()
@@ -361,10 +394,14 @@ def main():
                    
                     adposy=adposx-672
                     adposx=672
-
-                if carddir[nrcard]==0:
+                
+                try:
+                  if carddir[nrcard]==0:
                     carddir[nrcard]=nrcard%2*2-1
                     totdir+=nrcard%2*2-1
+                except:
+                  print nrcard," is out of range -",carddir
+
                 screen.blit(bitmap, (screenw/2-48+adposy*(carddir[nrcard]), adposx), (0, 0, 96,96))
                 #font=pygame.font.Font(upcli,fontsize*2/3)
                 #text= font.render(str(card), True, (255,255,255))
@@ -390,7 +427,88 @@ def main():
                         screen = pygame.display.set_mode((screenw, screenh), HWSURFACE|DOUBLEBUF|FULLSCREEN)
 
                     if e.key == ord('c'):
-                        carddir=[-1,-1,-1,-1,1,1,1,1]
+                        count=0
+                        bestscore=-99999
+                        savemyx=[]
+                        for x in searchrange(8):
+                          count+=1
+                          #print count,x, splitlist(cardlist,x),
+                          vcards=splitlist(cardlist,x)
+                          vrotation=copy.deepcopy(rotation)
+                          vcarpos=copy.deepcopy(carpos)
+                          vcards[0].reverse()
+                          vcards[1].reverse()
+
+                          score=0
+                          vcar=0
+                          for xx in vcards:
+                            for y in xx:
+                              if y==5:
+                                vrotation[vcar]+=1
+                              else:
+                                if y==6:
+                                  vrotation[vcar]-=1
+                                else:
+                                  if y<5:
+                                    if (y+vrotation[vcar])%4==1:
+                                      vcarpos[vcar][1]-=1
+                                      score-=1
+                                    if (y+vrotation[vcar])%4==2:
+                                      vcarpos[vcar][0]-=1
+                                      score-=1
+                                    if (y+vrotation[vcar])%4==3:
+                                      vcarpos[vcar][1]+=1
+                                      score+=1
+                                    if (y+vrotation[vcar])%4==0:
+                                      vcarpos[vcar][0]+=1
+                                      score+=1
+                            vcar+=1
+
+                          #for vrot in vrotation:
+                           # if vrot==0 or vrotation==3:
+                            #  score+=200
+                              #print"good rotation"
+
+                          score*=10
+                          score+=random.randint(1,9)
+                          score-=100*abs(vcarpos[0][0]-goalpos[0][0])+abs(vcarpos[0][1]-goalpos[0][1])
+                          score-=100*abs(vcarpos[1][0]-goalpos[1][0])+abs(vcarpos[1][1]-goalpos[1][1])
+                          score+=10000*(vcarpos[0][0]==goalpos[0][0] and carpos[0][1]==goalpos[0][1])
+                          score+=10000*(vcarpos[1][0]==goalpos[1][0] and carpos[1][1]==goalpos[1][1])
+
+                          if score>bestscore:
+                            bestscore=score
+                            print "---------------x",vcards,score,x, vcarpos, vrotation
+                            print "-------------car1", abs(vcarpos[0][0]-goalpos[0][0])+abs(vcarpos[0][1]-goalpos[0][1])
+                            print "-------------car2", abs(vcarpos[1][0]-goalpos[1][0])+abs(vcarpos[1][1]-goalpos[1][1])
+                            savemyx=copy.deepcopy(x)
+                          #else:
+                            #print "---------x",vcards,score
+
+
+
+
+
+
+                          #print vrotation
+
+                        
+                        if 1:
+                          carddir=[]
+                          for y in savemyx:
+                            carddir.append(y*2-1)
+                          print "sending:",savemyx,carddir
+                          
+
+                          carddir.reverse()
+
+
+
+                          
+
+
+
+
                         room=6
                         frame=0
                   if e.type == stopevent:
@@ -402,6 +520,9 @@ def main():
         if room==6:
 
             if frame==0:
+                if carpos[0]==goalpos[0] or carpos[1]==goalpos[1]:
+                    print"you are done"
+                    room=7
                 
                 frameadd=1
                 rotationcountdown=[0,0]
@@ -439,7 +560,12 @@ def main():
                   deltay2=0
                   rotdeg=[rotation[0]*90%360,rotation[1]*90%360]
                   
-                  print rotdeg
+                  print "YEL:",rotdeg[0], carpos[0],lookx,looky
+                  print "PUR:",rotdeg[1], carpos[1],lookx2,looky2
+                  if carpos[0]==goalpos[0] or carpos[1]==goalpos[1]:
+                    print"you are done"
+                    room=7
+
 
                   #delta=0
                   if decks[0][cardfromframe]==5:
@@ -454,13 +580,19 @@ def main():
                     else:
 
                       if (decks[0][cardfromframe]+rotation[0])%4==1:
-                        deltay=-one
+                        if carpos[0][1]>1:
+                          deltay=-one
+                          carpos[0][1]-=1
                       if (decks[0][cardfromframe]+rotation[0])%4==3:
                         deltay=one
+                        carpos[0][1]+=1
                       if (decks[0][cardfromframe]+rotation[0])%4==2:
-                        deltax=-one
+                        if carpos[0][0]>1:
+                          deltax=-one
+                          carpos[0][0]-=1
                       if (decks[0][cardfromframe]+rotation[0])%4==0:
                         deltax=one
+                        carpos[0][0]+=1
 
                   #if decks[0][cardfromframe]==5:
                    # bitmaplist[7]=pygame.transform.rotate(bitmaplist[7],10)
@@ -483,13 +615,19 @@ def main():
                       
                     else:
                       if (decks[1][cardfromframe]+rotation[1])%4==1:
-                        deltay2=-one
+                        if carpos[1][1]>1:
+                          deltay2=-one
+                          carpos[1][1]-=1
                       if (decks[1][cardfromframe]+rotation[1])%4==3:
                         deltay2=one
+                        carpos[1][1]+=1
                       if (decks[1][cardfromframe]+rotation[1])%4==2:
-                        deltax2=-one
+                        if carpos[1][0]>1:
+                          deltax2=-one
+                          carpos[1][0]-=1
                       if (decks[1][cardfromframe]+rotation[1])%4==0:
                         deltax2=one
+                        carpos[1][0]+=1
               
 
 
@@ -499,9 +637,10 @@ def main():
             lookx2+=deltax2
             looky2+=deltay2
             screen.fill((55,133,33))
-            screen.blit(bitmaplist[7], (0, fieldd), (lookx, looky, fieldw,fieldh)) 
             screen.blit(bitmaplist[10], (0, 0), (0, 0, fieldw,fieldh)) 
             screen.blit(bitmaplist[10], (fieldr, 0), (0, 0, fieldw,fieldh)) 
+            screen.blit(bitmaplist[7], (0, fieldd), (lookx, looky, fieldw,fieldh)) 
+            
             screen.blit(bitmaplist[7], (fieldr, fieldd), (lookx2, looky2, fieldw,fieldh)) 
 
             if rotationcountdown[0]>0:
@@ -545,10 +684,10 @@ def main():
                     bitmap=bitmaplist[card-1]
                     if mcard==cardfromframe+1:
                       stretch = pygame.transform.scale(bitmap, (64, 64))
-                      screen.blit(stretch, (screenw/2-32+decknr*400, (mcard*96)), (0, 0, 64,64))
+                      screen.blit(stretch, (screenw/2-32+decknr*48, 300+(mcard*96)), (0, 0, 64,64))
                     else:
                       stretch = pygame.transform.scale(bitmap, (48, 48))  
-                      screen.blit(stretch, (screenw/2-24+decknr*400, (mcard*96)), (0, 0, 48,48))
+                      screen.blit(stretch, (screenw/2-24+decknr*48, 300+(mcard*96)), (0, 0, 48,48))
                     
                     font=pygame.font.Font(upcli,fontsize*2/3)
                     text= font.render(str(nrcard), True, (255,255,255))
@@ -570,6 +709,11 @@ def main():
 
         if room==7:
             screen.fill((99,133,99))
+            font=pygame.font.Font(upcli,fontsize*2)
+           
+
+            text= font.render("VICTORY! :)", True, blue)
+            screen.blit(text, [320,150+50*math.sin((frame*2-2)*0.05)])
             for e in pygame.event.get():
              
                   
