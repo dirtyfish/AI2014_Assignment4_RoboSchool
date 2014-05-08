@@ -90,7 +90,7 @@ def main():
     looky2=0
     decks=[[],[]]
     frameadd=1
-    room=2
+    room=0
     pygame.init()
     mainClock = pygame.time.Clock()
     screen = pygame.display.set_mode((screenw, screenh), HWSURFACE|DOUBLEBUF)
