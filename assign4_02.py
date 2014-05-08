@@ -31,6 +31,7 @@ print fieldw,fieldh
 #black=0x000000
 #black=66
 
+randomset = [0,1,1,1,2,3,4,5,6]
 instructions= ['UP','LEFT','DOWN','RIGHT','TURN LEFT','TURN RIGHT']
 
 imagenamel=['instruction_up_cropped_96.tga']
@@ -296,7 +297,7 @@ def main():
                 cardsleft=cards
                 totdir=0
                 for x in range(cards):
-                    cardlist.append(random.randint(1,6))
+                    cardlist.append(randomset[random.randint(1,8)])
                     carddir.append(0)
 
 
